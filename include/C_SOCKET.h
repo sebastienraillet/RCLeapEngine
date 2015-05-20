@@ -15,11 +15,16 @@ class C_SOCKET
     C_SOCKET();
     virtual ~C_SOCKET();
     bool Init ( void );
-    bool Connect ( void );
+    bool Bind ( void );
+    bool Listen ( void );
+    bool WaitIncomingConnection ( void );
     void Disconnect ( void );
     bool Send ( string p_message );
+    void PrintConnectedClient ( void );
 
   private:
-    int m_sock_fd;
+    int m_sock_server_fd;
+    int m_sock_client_fd;
     struct sockaddr_in m_server_socket;
+    struct sockaddr_in m_client_socket;
 };

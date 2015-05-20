@@ -34,13 +34,29 @@ void C_LISTENER::onConnect(const Controller &p_controller)
   else
   {
     std::cout << "The socket is initialized" << std::endl;
-    if ( false == m_socket.Connect() )
+    if ( false == m_socket.Bind() )
     {
-      std::cout << "Impossible to connect the socket" << std::endl;
+      std::cout << "Impossible to bind the socket" << std::endl;
     }
     else
     {
-      std::cout << "The socket is connected" << std::endl;
+      std::cout << "The socket is binded" << std::endl;
+      if ( false == m_socket.Listen() )
+      {
+        std::cout << "Impossible to listen the socket" << std::endl;
+      }
+      else
+      {
+        std::cout << "The socket wait for a new connection..." << std::endl;
+        if ( false == m_socket.WaitIncomingConnection() )
+        {
+          std::cout << "Problem with the new client" << std::endl;
+        }
+        else
+        {
+          m_socket.PrintConnectedClient();
+        }
+      }
     }
   }
 }

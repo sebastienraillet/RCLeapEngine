@@ -32,5 +32,7 @@ class C_LISTENER : public Listener
 
   private:
     C_SOCKET m_socket;
-    string CreateMessage(float p_vitesse, float p_direction);
+    string CreateMessage(float p_speed, float p_direction);
+    int Map(int p_x, int p_in_min, int p_in_max, int p_out_min, int p_out_max);
+    int Constraint(int p_value, int p_constraint_min, int p_constraint_max);
 };

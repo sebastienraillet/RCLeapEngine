@@ -82,6 +82,8 @@ void C_LISTENER::onFrame(const Controller &p_controller)
     << ", gestures: " << frame.gestures().count() << std::endl;*/
 
   HandList hands = frame.hands();
+  
+  
   for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) 
   {
     // Get the first hand
@@ -91,6 +93,7 @@ void C_LISTENER::onFrame(const Controller &p_controller)
 
     // Get fingers
     const FingerList fingers = hand.fingers();
+    
     for (FingerList::const_iterator fl = fingers.begin(); fl != fingers.end(); ++fl) 
     {
       const Finger finger = *fl;
@@ -109,12 +112,25 @@ void C_LISTENER::onFrame(const Controller &p_controller)
         std::cout << "Pinky distal bone y position : " << l_pinky_y_position << std::endl;
       }
     }
+    
+    if(hand.isRight()){ // Traitement main droite
+			//Calculate the difference between the thumb and the pinky to get the direction
+			l_difference_thumb_pinky = l_thumb_y_position - l_pinky_y_position;
+			//std::cout << "Main droite" << std::endl;
+			
+		}
+	else{ // Traitement main gauche
+			
+			l_difference_thumb_pinky = l_pinky_y_position - l_thumb_y_position;
+			//std::cout << "Main gauche" << std::endl;
+		}
   }
 
-  //Calculate the difference between the thumb and the pinky to get the direction
-  l_difference_thumb_pinky = l_thumb_y_position - l_pinky_y_position;
+	
+
 
   m_socket.Send(CreateMessage(l_hand_position, l_difference_thumb_pinky));
+  
 }
 
 void C_LISTENER::onFocusGained(const Controller &p_controller)

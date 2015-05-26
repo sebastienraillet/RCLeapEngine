@@ -32,7 +32,11 @@ class C_LISTENER : public Listener
 
   private:
     C_SOCKET m_socket;
-    string CreateMessage(float p_speed, float p_direction);
+    int m_previous_speed;
+    int m_previous_direction;
+    string CreateMessage(int p_speed, int p_direction);
+    void MapAndConstraint(float p_speed_in, float p_direction_in, int& p_speed_out, int& p_direction_out);
+ 
     int Map(int p_x, int p_in_min, int p_in_max, int p_out_min, int p_out_max);
     int Constraint(int p_value, int p_constraint_min, int p_constraint_max);
     void userConfiLeap();

@@ -17,6 +17,8 @@
 C_LISTENER::C_LISTENER():
   Listener()
   ,m_socket()
+  ,m_previous_speed(0)
+  ,m_previous_direction(0)
 {}
 
 C_LISTENER::~C_LISTENER()
@@ -72,6 +74,7 @@ void C_LISTENER::onExit(const Controller &p_controller)
 void C_LISTENER::onFrame(const Controller &p_controller)
 {
   float l_thumb_y_position, l_pinky_y_position, l_difference_thumb_pinky, l_hand_position = 0;
+  int l_speed, l_direction = 0;
   const Frame frame = p_controller.frame();
 
   /*std::cout << "Frame id: " << frame.id()
@@ -89,7 +92,7 @@ void C_LISTENER::onFrame(const Controller &p_controller)
     // Get the first hand
     const Hand hand = *hl;
     l_hand_position = hand.palmPosition().z;
-    std::cout << "Hand position z axis : " << hand.palmPosition().z << std::endl;
+    //std::cout << "Hand position z axis : " << hand.palmPosition().z << std::endl;
 
     // Get fingers
     const FingerList fingers = hand.fingers();
@@ -102,14 +105,14 @@ void C_LISTENER::onFrame(const Controller &p_controller)
         Bone::Type boneType = static_cast<Bone::Type>(Bone::TYPE_DISTAL);
         Bone bone = finger.bone(boneType);
         l_thumb_y_position = bone.nextJoint().y;
-        std::cout << "Thumb distal bone y position : " << l_thumb_y_position << std::endl;
+        //std::cout << "Thumb distal bone y position : " << l_thumb_y_position << std::endl;
       }
       else if ( Finger::TYPE_PINKY == finger.type() )
       {
         Bone::Type boneType = static_cast<Bone::Type>(Bone::TYPE_DISTAL);
         Bone bone = finger.bone(boneType);
         l_pinky_y_position = bone.nextJoint().y;
-        std::cout << "Pinky distal bone y position : " << l_pinky_y_position << std::endl;
+        //std::cout << "Pinky distal bone y position : " << l_pinky_y_position << std::endl;
       }
     }
     
@@ -125,12 +128,14 @@ void C_LISTENER::onFrame(const Controller &p_controller)
 			//std::cout << "Main gauche" << std::endl;
 		}
   }
-
-	
-
-
-  m_socket.Send(CreateMessage(l_hand_position, l_difference_thumb_pinky));
   
+  //m_socket.Send(CreateMessage(l_hand_position, l_difference_thumb_pinky));
+  MapAndConstraint(l_hand_position, l_difference_thumb_pinky, l_speed, l_direction);
+  if ( (l_direction >= m_previous_direction+2) || (l_direction <= m_previous_direction-2) )
+  {
+    m_previous_direction = l_direction;
+    m_socket.Send(CreateMessage(0, l_direction));
+  }
 }
 
 void C_LISTENER::onFocusGained(const Controller &p_controller)
@@ -148,27 +153,32 @@ void C_LISTENER::onServiceConnect(const Controller &p_controller)
 void C_LISTENER::onServiceDisconnect(const Controller &p_controller)
 {}
 
-string C_LISTENER::CreateMessage(float p_speed, float p_direction)
+void C_LISTENER::MapAndConstraint(float p_speed_in, float p_direction_in, int& p_speed_out, int& p_direction_out)
 {
   // Constraint and map the speed and direction value
-  int l_speed = Map(Constraint(static_cast<int>(p_speed), CONSTRAINT_MIN_SPEED, CONSTRAINT_MAX_SPEED), 
+  p_speed_out = Map(Constraint(static_cast<int>(p_speed_in), CONSTRAINT_MIN_SPEED, CONSTRAINT_MAX_SPEED), 
                     COORDINATE_MIN_SPEED_LEAP, 
                     COORDINATE_MAX_SPEED_LEAP, 
                     COORDINATE_MIN_RC, 
                     COORDINATE_MAX_RC
                     );
-  int l_direction = Map(Constraint(static_cast<int>(p_direction), CONSTRAINT_MIN_DIRECTION, CONSTRAINT_MAX_DIRECTION), 
+  p_direction_out = Map(Constraint(static_cast<int>(p_direction_in), CONSTRAINT_MIN_DIRECTION, CONSTRAINT_MAX_DIRECTION), 
                         COORDINATE_MIN_DIRECTION_LEAP, 
                         COORDINATE_MAX_DIRECTION_LEAP, 
                         COORDINATE_MIN_RC, 
                         COORDINATE_MAX_RC
                         );
+}
+
+string C_LISTENER::CreateMessage(int p_speed, int p_direction)
+{
   ostringstream l_string;
   l_string << "{\"commande\":{\"vitesse\":" \
-           << l_speed \
+           << p_speed \
            << ",\"direction\":" \
-           << l_direction\
+           << p_direction\
            << "}}\n";
+  std::cout << l_string.str() << std::endl;
   return l_string.str();
 }
 

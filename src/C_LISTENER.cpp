@@ -15,7 +15,8 @@
 #define CONSTRAINT_MAX_DIRECTION 50
 
 // Difference between two positions that allow a sending on the socket
-#define DIFFERENCE 2
+#define DIFFERENCE_SPEED 2
+#define DIFFERENCE_DIRECTION 2
 
 C_LISTENER::C_LISTENER():
   Listener()
@@ -145,9 +146,13 @@ void C_LISTENER::onFrame(const Controller& p_controller)
                         COORDINATE_MIN_RC, 
                         COORDINATE_MAX_RC
                         );
-  if ( (l_direction >= m_previous_direction+DIFFERENCE) || (l_direction <= m_previous_direction-DIFFERENCE) )
+  if ( (l_direction >= m_previous_direction+DIFFERENCE_DIRECTION) || 
+       (l_direction <= m_previous_direction-DIFFERENCE_DIRECTION) ||
+       (l_speed >= m_previous_speed+DIFFERENCE_SPEED) ||
+       (l_speed <= m_previous_speed-DIFFERENCE_SPEED) )
   {
     m_previous_direction = l_direction;
+    m_previous_speed = l_speed;
     m_socket.Send(CreateMessage(l_speed, l_direction));
   }
 

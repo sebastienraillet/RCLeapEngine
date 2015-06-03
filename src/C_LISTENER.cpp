@@ -96,17 +96,24 @@ void C_LISTENER::onFrame(const Controller &p_controller)
         //std::cout << "Pinky distal bone y position : " << l_pinky_y_position << std::endl;
       }
     }
+
+    if( hand.isRight() ) // Traitement main droite
+    {         
+      l_difference_thumb_pinky = l_thumb_y_position - l_pinky_y_position;
+      std::cout << "Right hand" << std::endl;
+    }
+    else // Traitement main gauche
+    { 
+      l_difference_thumb_pinky = l_pinky_y_position - l_thumb_y_position;
+      std::cout << "Left hand" << std::endl;
+    }
   }
 
-  //Calculate the difference between the thumb and the pinky to get the direction
-  l_difference_thumb_pinky = l_thumb_y_position - l_pinky_y_position;
-
-  //m_socket.Send(CreateMessage(l_hand_position, l_difference_thumb_pinky));
   MapAndConstraint(l_hand_position, l_difference_thumb_pinky, l_speed, l_direction);
   if ( (l_direction >= m_previous_direction+2) || (l_direction <= m_previous_direction-2) )
   {
     m_previous_direction = l_direction;
-    m_socket.Send(CreateMessage(0, l_direction));
+    m_socket.Send(CreateMessage(l_speed, l_direction));
   }
 
 }

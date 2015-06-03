@@ -2,6 +2,7 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <linux/tcp.h>
 
 C_SOCKET::C_SOCKET():
   m_sock_fd(-1)
@@ -13,6 +14,7 @@ C_SOCKET::~C_SOCKET()
 bool C_SOCKET::Init( void )
 {
   bool l_status = true;
+  int l_flag_tcp_nodelay = 1;
 
   m_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if ( -1 == m_sock_fd )
@@ -24,6 +26,10 @@ bool C_SOCKET::Init( void )
     m_server_socket.sin_addr.s_addr = inet_addr(ADDR);
     m_server_socket.sin_family = AF_INET;
     m_server_socket.sin_port = htons(PORT);
+    if( setsockopt(m_sock_fd, IPPROTO_TCP, TCP_NODELAY, (char*)&l_flag_tcp_nodelay, sizeof(l_flag_tcp_nodelay)) < 0 )
+    {
+      l_status = false;
+    }
   }
 
   return l_status;

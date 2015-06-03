@@ -118,9 +118,33 @@ void C_LISTENER::onFrame(const Controller& p_controller)
     { 
       l_difference_thumb_pinky = l_pinky_y_position - l_thumb_y_position;
     }
+
+    if ( l_hand_position >= -50 && l_hand_position <= 50 )
+    {
+      l_speed = 50;
+    }
+    else
+    {
+      if ( l_hand_position > 50 )
+      {
+        l_speed = Constraint(static_cast<int>(l_hand_position), 50, 100);
+        l_speed = Map(l_speed, 50, 100, 50, 100);
+      }
+      else // l_hand_position < -50
+      {
+        l_speed = Constraint(static_cast<int>(l_hand_position), -100, 50);
+        l_speed = Map(l_speed, -100, -50, 0, 50);
+      }
+    }
   }
 
-  MapAndConstraint(l_hand_position, l_difference_thumb_pinky, l_speed, l_direction);
+  //MapAndConstraint(l_hand_position, l_difference_thumb_pinky, l_speed, l_direction);
+  l_direction = Map(Constraint(static_cast<int>(l_difference_thumb_pinky), CONSTRAINT_MIN_DIRECTION, CONSTRAINT_MAX_DIRECTION), 
+                        COORDINATE_MIN_DIRECTION_LEAP, 
+                        COORDINATE_MAX_DIRECTION_LEAP, 
+                        COORDINATE_MIN_RC, 
+                        COORDINATE_MAX_RC
+                        );
   if ( (l_direction >= m_previous_direction+DIFFERENCE) || (l_direction <= m_previous_direction-DIFFERENCE) )
   {
     m_previous_direction = l_direction;

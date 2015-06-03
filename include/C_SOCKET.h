@@ -4,12 +4,12 @@
 #include <netinet/in.h>
 #include <string>
 
-#define ADDR "192.168.1.1"
-#define PORT 10200
+//#define ADDR "192.168.1.1"
+//#define PORT 10200
 
 // For test only
-//#define ADDR "127.0.0.1"
-//#define PORT 5005
+#define ADDR "127.0.0.1"
+#define PORT 5005
 
 using namespace std;
 

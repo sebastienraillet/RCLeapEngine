@@ -52,7 +52,9 @@ void C_LISTENER::onConnect(const Controller &p_controller)
 }
 
 void C_LISTENER::onDisconnect(const Controller &p_controller)
-{}
+{
+    m_socket.Send(CreateMessage(50, 50));
+}
 
 void C_LISTENER::onExit(const Controller &p_controller)
 {
@@ -208,7 +210,7 @@ string C_LISTENER::CreateMessage(int p_speed, int p_direction)
            << ",\"direction\":" \
            << p_direction\
            << "}}\n";
-  std::cout << l_string.str() << std::endl;
+  //std::cout << l_string.str() << std::endl;
   return l_string.str();
 }
 

@@ -69,8 +69,8 @@ void C_LISTENER::onExit(const Controller &p_controller)
  */
 void C_LISTENER::onFrame(const Controller& p_controller)
 {
-  float l_thumb_y_position, l_pinky_y_position, l_difference_thumb_pinky, l_hand_position = 0;
-  int l_speed, l_direction = 0;
+  float l_thumb_y_position = 0, l_pinky_y_position = 0, l_difference_thumb_pinky = 0, l_hand_position = 0;
+  int l_speed = 0, l_direction = 0;
   const Frame frame = p_controller.frame(); // Get the frame
 
   /*std::cout << "Frame id: " << frame.id()
@@ -129,12 +129,12 @@ void C_LISTENER::onFrame(const Controller& p_controller)
       if ( l_hand_position > 50 )
       {
         l_speed = Constraint(static_cast<int>(l_hand_position), 50, 100);
-        l_speed = Map(l_speed, 50, 100, 50, 100);
+        l_speed = Map(l_speed, 50, 100, 50, 0);
       }
       else // l_hand_position < -50
       {
-        l_speed = Constraint(static_cast<int>(l_hand_position), -100, 50);
-        l_speed = Map(l_speed, -100, -50, 0, 50);
+        l_speed = Constraint(static_cast<int>(l_hand_position), -100, -50);
+        l_speed = Map(l_speed, -100, -50, 100, 50);
       }
     }
   }

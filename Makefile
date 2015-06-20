@@ -18,8 +18,8 @@ all:
 	$(CXX) -Wall -g -I include $(SOURCES) -o $(EXECUTABLE_NAME) $(LEAP_LIBRARY)
 	
 ifeq ($(OS), Darwin)
-	install_name_tool -change @loader_path/libLeap.dylib lib/libLeap.dylib Sample
+	install_name_tool -change @loader_path/libLeap.dylib @executable_path/lib/libLeap.dylib LeapMotionEngine
 endif
 
 clean:
-	rm -rf Sample Sample.dSYM
+	rm -rf LeapMotionEngine LeapMotionEngine.dSYM

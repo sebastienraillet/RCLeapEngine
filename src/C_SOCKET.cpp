@@ -2,7 +2,11 @@
 
 #include <arpa/inet.h>
 #include <unistd.h>
+#ifdef __linux__ 
 #include <linux/tcp.h>
+#elif __APPLE__ && __MACH__
+#include <netinet/tcp.h>
+#endif
 
 C_SOCKET::C_SOCKET():
   m_sock_fd(-1)
